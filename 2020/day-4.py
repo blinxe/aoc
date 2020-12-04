@@ -21,7 +21,7 @@ def isValid(r):
 	eyr = int(r['eyr'])
 	if eyr < 2020 or eyr > 2030: return False
 
-	hgt = re.match('([0-9]+)(cm|in)', r['hgt'])
+	hgt = re.match('([0-9]+)(cm|in)$', r['hgt'])
 	if not hgt: return False
 	h = int(hgt[1])
 	u = hgt[2]
@@ -30,17 +30,16 @@ def isValid(r):
 	elif u == 'in' and (h < 59 or h > 76):
 		return False
 
-	hcl = re.match('#[0-9a-fA-F]{6}', r['hcl'])
+	hcl = re.match('#[0-9a-fA-F]{6}$', r['hcl'])
 	if not hcl: return False
 
 	if r['ecl'] not in [ 'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth', ]:
 		return False
 
-	pid = re.match('[0-9]{9}', r['pid'])
-	if not hcl: return False
+	pid = re.match('[0-9]{9}$', r['pid'])
+	if not pid: return False
 
 	return True
 
 valid = [r for r in complete if isValid(r)]
 print(len(valid))
-print(valid)

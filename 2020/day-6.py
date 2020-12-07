@@ -4,30 +4,27 @@ input = input.split('\n\n')
 input = [ g.split() for g in input ]
 
 # Part One
-# def handleGroup(g):
-# 	az = set()
-# 	for p in g:
-# 		for l in p:
-# 			az.add(l)
-# 	return az
+def handleGroup(g):
+	az = set()
+	for p in g:
+		for l in p:
+			az.add(l)
+	return az
 
-# az = map(handleGroup, input)
-# s = map(len, az)
-# print(sum(s))
+az = map(handleGroup, input)
+s = map(len, az)
+print(sum(s))
 
 # Part Two
 import string
 def handleGroupCommon(g):
 	az = list(string.ascii_lowercase)
 	for p in g:
-		print('AZ:', az)
-		print(p)
 		tmp = az.copy()
 		for l in az:
 			if l not in p:
 				tmp.remove(l)
 		az = tmp
-	print('AZ:', az)
 	return az
 
 az = map(handleGroupCommon, input)

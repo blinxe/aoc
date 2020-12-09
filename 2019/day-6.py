@@ -12,6 +12,9 @@ def ancestors(b):
 print('checksum:', sum(sum(1 for _ in ancestors(b)) for b in orbits))
 
 # Part Two
-distYou, common = next((i, b) for i, b in enumerate(ancestors('YOU')) if b in ancestors('SAN'))
-distSan = next(i for i, b in enumerate(ancestors('SAN')) if b==common)
+# distYou, common = next((i, b) for i, b in enumerate(ancestors('YOU')) if b in ancestors('SAN'))
+# distSan = next(i for i, b in enumerate(ancestors('SAN')) if b==common)
+ancSan = list(ancestors('SAN')) # going through it many times -> prevent dict lookups
+distYou, common = next((i, b) for i, b in enumerate(ancestors('YOU')) if b in ancSan)
+distSan = ancSan.index(common)
 print('jumps:', distYou+distSan)

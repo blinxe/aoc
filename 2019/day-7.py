@@ -1,104 +1,45 @@
-with open('input-7.txt') as f:
-	input = [int(s) for s in f.read().split(',')]
-
+from intcode import Proc, State
 import itertools
 
-mem = []
-p_in = []
-p_out = []
-
-def get(pc, mode):
-	if mode == 0: return mem[mem[pc]]
-	elif mode == 1: return mem[pc]
-
-def set(pc, mode, val):
-	if mode == 0: mem[mem[pc]] = val
-	elif mode == 1: mem[pc] = val # never?
-
-
-def add(pc, mode):
-	op1 = get(pc, mode[0])
-	op2 = get(pc+1, mode[1])
-	set(pc+2, mode[2], op1+op2)
-	return 3
-
-def mul(pc, mode):
-	op1 = get(pc, mode[0])
-	op2 = get(pc+1, mode[1])
-	set(pc+2, mode[2], op1*op2)
-	return 3
-
-def read(pc, mode):
-	set(pc, mode[0], p_in.pop(0))
-	return 1
-
-def write(pc, mode):
-	p_out.append(get(pc, mode[0]))
-	return 1
-
-def jeq(pc, mode):
-	if get(pc, mode[0]) == 0: return 2
-	to = get(pc+1, mode[1])
-	return to-pc
-
-def jne(pc, mode):
-	if get(pc, mode[0]) != 0: return 2
-	to = get(pc+1, mode[1])
-	return to-pc
-
-def lt(pc, mode):
-	p1 = get(pc, mode[0])
-	p2 = get(pc+1, mode[1])
-	set(pc+2, mode[2], 1 if p1<p2 else 0)
-	return 3
-
-def eq(pc, mode):
-	p1 = get(pc, mode[0])
-	p2 = get(pc+1, mode[1])
-	set(pc+2, mode[2], 1 if p1==p2 else 0)
-	return 3
-
-
-ops = {
-	1: add,
-	2: mul,
-	3: read,
-	4: write,
-	5: jeq,
-	6: jne,
-	7: lt,
-	8: eq,
-}
-
-
-def run():
-	pc = 0
-	while mem[pc] != 99:
-		op = mem[pc] % 100
-		mode = [int(c) for c in f'{mem[pc]//100:03}'[::-1]]
-		if op not in ops:
-			print(f'err @{pc}: {mem[pc]}')
-			break
-		pc += 1 + ops[op](pc+1, mode)
-
+with open('input-7.txt') as f:
+	input = [int(s) for s in f.read().split(',')]
 
 # Part One
 M = 0
 pM = None
 for p in itertools.permutations(range(5)):
-	output = 0
-	for amp in range(5):
-		mem = input.copy()
-		p_in = [ p[amp], output ]
-		p_out = []
-		run()
-		output = p_out[0]
-	if output > M:
-		M = output
+	throughput = 0
+
+	for i in range(5):
+		amp = Proc(input, [p[i], throughput])
+		amp.run()
+		throughput = amp.p_out[0]
+	if throughput > M:
+		M = throughput
 		pM = p
 
-print(pM, M)
+print(pM, M, flush=True)
 
 # Part Two
-for p in itertools.permutations(range(5, 10)):
-	
+M = 0
+pM = None
+for init in itertools.permutations(range(5, 10)):
+	throughput = 0
+
+	amps = [ Proc(input, [i, 0]) for i in init ]
+	amps[-1].p_out = [0] # initial input
+	for i in range(5):
+		amps[i].step() # read phase setting
+		amps[i].p_in = amps[(i+4)%5].p_out
+
+	i = 0
+	while amps[i].state is not State.HALTED:
+		amps[i].run()
+		i = (i+1) % 5
+
+	throughput = amps[-1].p_out[0]
+	if throughput > M:
+		M = throughput
+		pM = init
+
+print(pM, M)

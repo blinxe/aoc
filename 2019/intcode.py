@@ -27,49 +27,49 @@ class Proc:
 		self.pc += 1
 
 
-	def add(self, mode):
-		op1 = self.get(mode[0])
-		op2 = self.get(mode[1])
-		self.set(mode[2], op1+op2)
+	def add(self, m1, m2, mo, *_):
+		op1 = self.get(m1)
+		op2 = self.get(m2)
+		self.set(mo, op1+op2)
 
-	def mul(self, mode):
-		op1 = self.get(mode[0])
-		op2 = self.get(mode[1])
-		self.set(mode[2], op1*op2)
+	def mul(self, m1, m2, mo, *_):
+		op1 = self.get(m1)
+		op2 = self.get(m2)
+		self.set(mo, op1*op2)
 
-	def read(self, mode):
+	def read(self, mo, *_):
 		if not self.p_in:
 			self.pc -= 1 # back to ins 'read'
 			self.state = State.SUSPENDED
 			return
-		self.set(mode[0], self.p_in.pop(0))
+		self.set(mo, self.p_in.pop(0))
 
-	def write(self, mode):
-		self.p_out.append(self.get(mode[0]))
+	def write(self, mi, *_):
+		self.p_out.append(self.get(mi))
 
-	def jeq(self, mode):
-		if self.get(mode[0]) == 0:
+	def jeq(self, m1, m2, *_):
+		if self.get(m1) == 0:
 			self.pc += 1
 			return
-		self.pc = self.get(mode[1])
+		self.pc = self.get(m2)
 
-	def jne(self, mode):
-		if self.get(mode[0]) != 0:
+	def jne(self, m1, m2, *_):
+		if self.get(m1) != 0:
 			self.pc += 1
 			return
-		self.pc = self.get(mode[1])
+		self.pc = self.get(m2)
 
-	def lt(self, mode):
-		p1 = self.get(mode[0])
-		p2 = self.get(mode[1])
-		self.set(mode[2], 1 if p1<p2 else 0)
+	def lt(self, m1, m2, mo, *_):
+		p1 = self.get(m1)
+		p2 = self.get(m2)
+		self.set(mo, 1 if p1<p2 else 0)
 
-	def eq(self, mode):
-		p1 = self.get(mode[0])
-		p2 = self.get(mode[1])
-		self.set(mode[2], 1 if p1==p2 else 0)
+	def eq(self, m1, m2, mo, *_):
+		p1 = self.get(m1)
+		p2 = self.get(m2)
+		self.set(mo, 1 if p1==p2 else 0)
 
-	def halt(self, _):
+	def halt(self, *_):
 		self.state = State.HALTED
 
 
@@ -90,15 +90,19 @@ class Proc:
 		if self.state not in [ State.SUSPENDED, State.RUNNING ]:
 			print(f'err: proc is {self.state}')
 			return
+
 		ins = self.mem[self.pc]
 		op = ins % 100
-		mode = [int(c) for c in f'{ins//100:03}'[::-1]]
+		mode = [int(c) for c in f'{ins//100:03}'][::-1] # 11xx -> '011' -> [0,1,1] -> [1,1,0]
+
 		if op not in Proc.ops:
 			self.state = State.CRASHED
 			print(f'err @{self.pc}: {ins}')
 			return
-		self.pc += 1
-		Proc.ops[op](self, mode)
+
+		self.pc += 1 # move pc to first param / next ins
+		Proc.ops[op](self, *mode)
+
 
 	def run(self):
 		if self.state is not State.SUSPENDED:

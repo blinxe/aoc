@@ -24,15 +24,12 @@ for phases in itertools.permutations(range(NAMPS)):
 print(pM, M, flush=True)
 
 # Part Two
-INPUT = 0
 M = 0
 pM = None
 for phases in itertools.permutations(range(5, 5+NAMPS)):
-	amps = [ Proc(input, [i]) for i in phases ]
-	amps[-1].io_out = [INPUT] # initial input
-	for i in range(NAMPS):
-		amps[i].step() # read phase setting
-		amps[i].io_in = amps[(i+NAMPS-1)%NAMPS].io_out
+	ios = [ [i] for i in phases ]
+	ios[0].append(INPUT)
+	amps = [ Proc(input, ios[i], ios[(i+1)%NAMPS]) for i in range(NAMPS) ]
 
 	i = 0
 	while amps[i].state is State.SUSPENDED:

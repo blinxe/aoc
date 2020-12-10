@@ -35,7 +35,6 @@ class VMem:
 
 class Proc:
 	def __init__(self, prog, io_in=None, io_out=None, dbg=None):
-		# self.mem = [ (0, prog.copy()) ]
 		self.mem = VMem(prog.copy())
 		self.pc = 0
 		self.rb = 0
@@ -136,7 +135,7 @@ class Proc:
 		ins = self.get(1)
 		self.pdbg('ic', self.pc-1, ins)
 		op = ins % 100
-		mode = [ int(c) for c in f'{ins//100:03}' ][::-1] # 11xx -> '011' -> [0,1,1] -> [1,1,0]
+		mode = [ int(c) for c in f'{ins//100:03}' ][::-1]
 
 		if op not in Proc.ops:
 			self.state = State.CRASHED

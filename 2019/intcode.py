@@ -9,11 +9,11 @@ class State(Enum):
 
 
 class Proc:
-	def __init__(self, prog, p_in=None, p_out=None):
+	def __init__(self, prog, io_in=None, io_out=None):
 		self.mem = prog.copy()
 		self.pc = 0
-		self.p_in = p_in if p_in is not None else []
-		self.p_out = p_out if p_out is not None else []
+		self.io_in = io_in if io_in is not None else []
+		self.io_out = io_out if io_out is not None else []
 		self.state = State.SUSPENDED
 
 	def get(self, mode):
@@ -38,14 +38,14 @@ class Proc:
 		self.set(mo, op1*op2)
 
 	def read(self, mo, *_):
-		if not self.p_in:
+		if not self.io_in:
 			self.pc -= 1 # back to ins 'read'
 			self.state = State.SUSPENDED
 			return
-		self.set(mo, self.p_in.pop(0))
+		self.set(mo, self.io_in.pop(0))
 
 	def write(self, mi, *_):
-		self.p_out.append(self.get(mi))
+		self.io_out.append(self.get(mi))
 
 	def jeq(self, m1, m2, *_):
 		if self.get(m1) == 0:
@@ -88,26 +88,27 @@ class Proc:
 
 	def step(self):
 		if self.state not in [ State.SUSPENDED, State.RUNNING ]:
-			print(f'err: proc is {self.state}')
+			print('err: proc is', self.state)
 			return
 
 		ins = self.mem[self.pc]
 		op = ins % 100
-		mode = [int(c) for c in f'{ins//100:03}'][::-1] # 11xx -> '011' -> [0,1,1] -> [1,1,0]
+		mode = [ int(c) for c in f'{ins//100:03}' ][::-1] # 11xx -> '011' -> [0,1,1] -> [1,1,0]
 
 		if op not in Proc.ops:
 			self.state = State.CRASHED
 			print(f'err @{self.pc}: {ins}')
 			return
 
-		self.pc += 1 # move pc to first param / next ins
+		self.pc += 1 # move to first param / next ins
 		Proc.ops[op](self, *mode)
 
 
 	def run(self):
 		if self.state is not State.SUSPENDED:
-			print(f'err: proc is {self.state}')
+			print('err: proc is', self.state)
 			return
+			
 		self.state = State.RUNNING
 		while self.state is State.RUNNING:
 			self.step()

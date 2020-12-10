@@ -4,42 +4,44 @@ import itertools
 with open('input-7.txt') as f:
 	input = [int(s) for s in f.read().split(',')]
 
+NAMPS = 5
+INPUT = 0
+
 # Part One
 M = 0
 pM = None
-for p in itertools.permutations(range(5)):
-	throughput = 0
+for phases in itertools.permutations(range(NAMPS)):
+	throughput = INPUT
 
-	for i in range(5):
-		amp = Proc(input, [p[i], throughput])
+	for i in range(NAMPS):
+		amp = Proc(input, [phases[i], throughput])
 		amp.run()
-		throughput = amp.p_out[0]
+		throughput = amp.io_out[0]
 	if throughput > M:
 		M = throughput
-		pM = p
+		pM = phases
 
 print(pM, M, flush=True)
 
 # Part Two
+INPUT = 0
 M = 0
 pM = None
-for init in itertools.permutations(range(5, 10)):
-	throughput = 0
-
-	amps = [ Proc(input, [i, 0]) for i in init ]
-	amps[-1].p_out = [0] # initial input
-	for i in range(5):
+for phases in itertools.permutations(range(5, 5+NAMPS)):
+	amps = [ Proc(input, [i]) for i in phases ]
+	amps[-1].io_out = [INPUT] # initial input
+	for i in range(NAMPS):
 		amps[i].step() # read phase setting
-		amps[i].p_in = amps[(i+4)%5].p_out
+		amps[i].io_in = amps[(i+NAMPS-1)%NAMPS].io_out
 
 	i = 0
-	while amps[i].state is not State.HALTED:
+	while amps[i].state is State.SUSPENDED:
 		amps[i].run()
-		i = (i+1) % 5
+		i = (i+1) % NAMPS
 
-	throughput = amps[-1].p_out[0]
+	throughput = amps[-1].io_out[0]
 	if throughput > M:
 		M = throughput
-		pM = init
+		pM = phases
 
 print(pM, M)

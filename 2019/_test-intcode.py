@@ -22,8 +22,6 @@ for n, v in itertools.product(range(100), range(100)):
 	p = Proc(prog)
 	p.mem[1] = n
 	p.mem[2] = v
-	# while p.state != State.HALTED:
-	# 	p.step()
 	p.run()
 	if p.mem[0] == 19690720:
 		print('Part Two:', 100*n + v, flush=True)
@@ -40,16 +38,14 @@ with open('input-5.txt') as f:
 prog = list(map(int, input.split(',')))
 
 # Part One
-p_out = []
-p = Proc(prog, p_in=[1], p_out=p_out)
+p = Proc(prog, io_in=[1])
 p.run()
-print('Part One:', p_out, flush=True)
+print('Part One:', p.io_out, flush=True)
 
 # Part Two
-p_out = []
-p = Proc(prog, p_in=[5], p_out=p_out)
+p = Proc(prog, io_in=[5])
 p.run()
-print('Part Two:', p_out[0], flush=True)
+print('Part Two:', p.io_out[0], flush=True)
 print()
 
 
@@ -69,7 +65,7 @@ for p in itertools.permutations(range(5)):
 	for i in range(5):
 		amp = Proc(prog, [p[i], throughput])
 		amp.run()
-		throughput = amp.p_out[0]
+		throughput = amp.io_out[0]
 	if throughput > M:
 		M = throughput
 		pM = p
@@ -83,16 +79,16 @@ for init in itertools.permutations(range(5, 10)):
 	throughput = 0
 
 	amps = [ Proc(prog, [i, 0]) for i in init ]
-	amps[-1].p_out = [0] # initial input
+	amps[-1].io_out = [0] # initial input
 	for i in range(5):
 		amps[i].step() # read phase setting
-		amps[i].p_in = amps[(i+4)%5].p_out
+		amps[i].io_in = amps[(i+4)%5].io_out
 	i = 0
 	while amps[i].state is not State.HALTED:
 		amps[i].run()
 		i = (i+1) % 5
 
-	throughput = amps[-1].p_out[0]
+	throughput = amps[-1].io_out[0]
 	if throughput > M:
 		M = throughput
 		pM = init

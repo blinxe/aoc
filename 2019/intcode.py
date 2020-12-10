@@ -8,22 +8,54 @@ class State(Enum):
 	CRASHED = auto(),
 
 
+class VMem:
+	def __init__(self, mem):
+		self.vmem = [ (0, mem) ]
+
+	def __str__(self):
+		return self.vmem.__str__()
+
+	def __getitem__(self, at):
+		off, mem = next(((off, mem) for off, mem in self.vmem if at>=off and at<off+len(mem)), (at, [0]))
+		return mem[at-off]
+
+	def __setitem__(self, at, val):
+		frag = next(((off, mem) for off, mem in self.vmem if at>=off and at<off+len(mem)), None)
+		if frag is None:
+			self.vmem.append([at, [val]])
+			self.defrag()
+		else:
+			off, mem = frag
+			mem[at-off] = val
+
+	def defrag(self):
+		# lol
+		pass
+
+
 class Proc:
-	def __init__(self, prog, io_in=None, io_out=None):
-		self.mem = prog.copy()
+	def __init__(self, prog, io_in=None, io_out=None, dbg=None):
+		# self.mem = [ (0, prog.copy()) ]
+		self.mem = VMem(prog.copy())
 		self.pc = 0
+		self.rb = 0
 		self.io_in = io_in if io_in is not None else []
 		self.io_out = io_out if io_out is not None else []
 		self.state = State.SUSPENDED
+		self.dbg = dbg if dbg is not None else []
+
 
 	def get(self, mode):
+		if mode == 0: val = self.mem[self.mem[self.pc]]
+		elif mode == 1: val = self.mem[self.pc]
+		elif mode == 2: val = self.mem[self.mem[self.pc] + self.rb]
 		self.pc += 1
-		if mode == 0: return self.mem[self.mem[self.pc-1]]
-		elif mode == 1: return self.mem[self.pc-1]
+		return val
 
 	def set(self, mode, val):
 		if mode == 0: self.mem[self.mem[self.pc]] = val
-		elif mode == 1: self.mem[self.pc] = val # never?
+		elif mode == 1: self.mem[self.pc] = val
+		elif mode == 2: self.mem[self.mem[self.pc] + self.rb] = val
 		self.pc += 1
 
 
@@ -69,6 +101,10 @@ class Proc:
 		p2 = self.get(m2)
 		self.set(mo, 1 if p1==p2 else 0)
 
+	def rboff(self, m1, *_):
+		self.rb += self.get(m1)
+		self.pdbg('rb', 'rb:', self.rb)
+
 	def halt(self, *_):
 		self.state = State.HALTED
 
@@ -82,8 +118,14 @@ class Proc:
 		6: jne,
 		7: lt,
 		8: eq,
+		9: rboff,
 		99: halt,
 	}
+
+
+	def pdbg(self, flag, *args, **kwargs):
+		if flag in self.dbg:
+			print(*args, **kwargs)
 
 
 	def step(self):
@@ -91,16 +133,16 @@ class Proc:
 			print('err: proc is', self.state)
 			return
 
-		ins = self.mem[self.pc]
+		ins = self.get(1)
+		self.pdbg('ic', self.pc-1, ins)
 		op = ins % 100
 		mode = [ int(c) for c in f'{ins//100:03}' ][::-1] # 11xx -> '011' -> [0,1,1] -> [1,1,0]
 
 		if op not in Proc.ops:
 			self.state = State.CRASHED
-			print(f'err @{self.pc}: {ins}')
+			print(f'err @{self.pc-1}: {ins}')
 			return
 
-		self.pc += 1 # move to first param / next ins
 		Proc.ops[op](self, *mode)
 
 

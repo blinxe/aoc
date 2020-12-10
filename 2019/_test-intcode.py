@@ -95,3 +95,22 @@ for init in itertools.permutations(range(5, 10)):
 
 print('Part Two:', pM, M, flush=True)
 print()
+
+
+########
+# Day 9
+print ('Day 9', flush=True)
+
+with open('input-9.txt') as f:
+	prog = [ int(s) for s in f.read().split(',') ]
+
+# Part One
+boost = Proc(prog, io_in=[1])
+boost.run()
+print('Part One:', boost.io_out[0], flush=True)
+
+# Part Two
+boost = Proc(prog, io_in=[2])
+boost.run()
+print('Part Two:', boost.io_out[0], flush=True)
+print()

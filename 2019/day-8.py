@@ -1,9 +1,13 @@
 with open('input-8.txt') as f:
 	input = [int(c) for c in f.read()]
 
+def slices(list, n):
+	for i in range(0, len(list), n):
+		yield list[i:i+n]
+
 W = 25
 H = 6
-layers = [ input[i:i+W*H] for i in range(0, len(input), W*H) ]
+layers = list(slices(input, W*H))
 
 # Part One
 # zeroes, ones, twos
@@ -17,6 +21,5 @@ pic = [ reduce(lambda f,b: b if f==2 else f, pixels)
 	for pixels in zip(*layers) ]
 
 pic = ['#' if p==1 else ' ' for p in pic]
-rows = [ pic[i:i+W] for i in range(0, W*H, W) ]
-for row in rows:
+for row in slices(pic, W):
 	print(*row, sep='')

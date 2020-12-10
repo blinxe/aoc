@@ -3,7 +3,7 @@ with open('input-1.txt') as f:
 input = map(int, input)
 
 # Part One
-fuel = list(map(lambda x: x//3-2, input))
+fuel = [ x//3-2 for x in input ]
 print(sum(fuel))
 
 # Part Two
@@ -15,5 +15,4 @@ def rocketeq(fuel):
 			fuel += more
 	return fuel
 
-more = map(rocketeq, fuel)
-print(sum(more))
+print(sum(rocketeq(f) for f in fuel))

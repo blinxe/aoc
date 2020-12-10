@@ -6,7 +6,7 @@ device = adapters[-1] + 3
 full = [0] + adapters + [device]
 
 # Part One
-diff = [ full[i]-full[i-1] for i in range(1, len(full)) ]
+diff = [ a2-a1 for a1,a2 in zip(full, full[1:]) ]
 d1 = diff.count(1)
 d3 = diff.count(3)
 print(d1, d3, d1*d3)

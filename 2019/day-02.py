@@ -1,4 +1,4 @@
-with open('input-2.txt') as f:
+with open('input-02.txt') as f:
 	input = f.read()
 input = list(map(int, input.split(',')))
 
@@ -32,7 +32,7 @@ mem = input.copy()
 mem[1] = 12
 mem[2] = 2
 run(mem)
-print(mem)
+print(mem[0])
 
 # Part Two
 import itertools

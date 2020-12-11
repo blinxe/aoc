@@ -1,4 +1,4 @@
-with open('input-9.txt') as f:
+with open('input-09.txt') as f:
 	input = [int(s) for s in f.read().split()]
 
 import itertools
@@ -22,7 +22,6 @@ for start in range(len(input)):
 	if s == weakness:
 		contiguous = range(start, i+1)
 
-print(contiguous)
 m = min(input[c] for c in contiguous)
 M = max(input[c] for c in contiguous)
 print(m+M)

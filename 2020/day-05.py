@@ -1,4 +1,4 @@
-with open('input-5.txt') as f:
+with open('input-05.txt') as f:
 	input = f.read().split()
 
 # Part One

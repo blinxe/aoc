@@ -1,7 +1,7 @@
 from intcode import Proc, State
 import itertools
 
-with open('input-7.txt') as f:
+with open('input-07.txt') as f:
 	input = [int(s) for s in f.read().split(',')]
 
 NAMPS = 5

@@ -1,4 +1,4 @@
-with open('input-7.txt') as f:
+with open('input-07.txt') as f:
 	input = f.read().split('\n')
 
 def parseAllowed(bt):

@@ -1,4 +1,4 @@
-with open('input-8.txt') as f:
+with open('input-08.txt') as f:
 	input = [int(c) for c in f.read()]
 
 def slices(list, n):

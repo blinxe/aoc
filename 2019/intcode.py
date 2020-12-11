@@ -34,14 +34,14 @@ class VMem:
 
 
 class Proc:
-	def __init__(self, prog, io_in=None, io_out=None, dbg=None):
+	def __init__(self, prog, io_in=None, io_out=None, dbgflags=None):
 		self.mem = VMem(prog.copy())
 		self.pc = 0
 		self.rb = 0
 		self.io_in = io_in if io_in is not None else []
 		self.io_out = io_out if io_out is not None else []
 		self.state = State.SUSPENDED
-		self.dbg = dbg if dbg is not None else []
+		self.dbgflags = dbgflags if dbgflags is not None else []
 
 
 	def get(self, mode):
@@ -123,7 +123,7 @@ class Proc:
 
 
 	def pdbg(self, flag, *args, **kwargs):
-		if flag in self.dbg:
+		if flag in self.dbgflags:
 			print(*args, **kwargs)
 
 

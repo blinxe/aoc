@@ -1,4 +1,4 @@
-with open('input-1.txt') as f:
+with open('input-01.txt') as f:
 	input = f.read().split()
 input = map(int, input)
 

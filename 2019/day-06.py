@@ -1,4 +1,4 @@
-with open('input-6.txt') as f:
+with open('input-06.txt') as f:
 	input = f.read().split()
 
 orbits = { b[1]: b[0] for b in [i.split(')') for i in input] }

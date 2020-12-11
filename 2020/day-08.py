@@ -1,4 +1,4 @@
-with open('input-8.txt') as f:
+with open('input-08.txt') as f:
 	input = f.read().split('\n')
 input = [ [op[0], int(op[1])] for op in [l.split() for l in input] ]
 
@@ -36,7 +36,7 @@ def run(prog):
 	return 0, mem
 
 # Part One
-run(input)
+print(run(input)[1])
 
 # Part Two
 def swap(ins):

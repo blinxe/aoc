@@ -1,4 +1,4 @@
-with open('input-3.txt') as f:
+with open('input-03.txt') as f:
 	input = [l[:-1].split(',') for l in f]
 
 # Part One

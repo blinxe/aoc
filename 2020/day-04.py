@@ -1,4 +1,4 @@
-with open('input-4.txt') as f:
+with open('input-04.txt') as f:
 	input = f.read()
 
 records = input.replace('\n', ' ').split('  ')

@@ -6,7 +6,7 @@ import itertools
 # Day 2
 print('Day 2', flush=True)
 
-with open('input-2.txt') as f:
+with open('input-02.txt') as f:
 	input = f.read()
 prog = list(map(int, input.split(',')))
 
@@ -33,7 +33,7 @@ print()
 # Day 5
 print('Day 5', flush=True)
 
-with open('input-5.txt') as f:
+with open('input-05.txt') as f:
 	input = f.read()
 prog = list(map(int, input.split(',')))
 
@@ -53,7 +53,7 @@ print()
 # Day 7
 print ('Day 7', flush=True)
 
-with open('input-7.txt') as f:
+with open('input-07.txt') as f:
 	prog = [int(s) for s in f.read().split(',')]
 
 # Part One
@@ -101,7 +101,7 @@ print()
 # Day 9
 print ('Day 9', flush=True)
 
-with open('input-9.txt') as f:
+with open('input-09.txt') as f:
 	prog = [ int(s) for s in f.read().split(',') ]
 
 # Part One

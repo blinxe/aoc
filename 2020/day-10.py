@@ -12,7 +12,7 @@ d3 = diff.count(3)
 print(d1, d3, d1*d3)
 
 # Part Two
-okNext = { a: [n for n in range(a+1, a+4) if n in full] for a in full }
+okNext = { a: [n for n in (a+1, a+2, a+3) if n in full] for a in full }
 okChainNb = { device: 1 }
 for adapter in full[-2::-1]:
 	okChainNb[adapter] = sum(okChainNb[a] for a in okNext[adapter])

@@ -70,6 +70,7 @@ class Proc:
 
 	def read(self, mo, *_):
 		if not self.io_in:
+			self.pdbg('io', 'Waiting for input')
 			self.pc -= 1 # back to ins 'read'
 			self.state = State.SUSPENDED
 			return

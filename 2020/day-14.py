@@ -27,29 +27,31 @@ print(sum(mem.values()))
 
 # Part Two
 
-def countmaskcombos(mask):
-	combos = ''.join([ '1' if c=='X' else '0' for c in mask ])
-	combos = int(combos, 2)
-	return combos
+def mergemask(mask, at):
+	masked = ''.join([ at[i] if mask[i]=='0' else mask[i] for i in range(36) ])
+	return masked
 
-masks = [ m.split()[-1] for m in input if m.startswith('mask = ') ][::-1]
-mi = 0
-
-print(masks)
-
-def suppressmask(m, M): # M supercedes m i.e. 0XX1,X0X0 -> 00X1
-	return ''.join([ mc if Mc=='X' else Mc for (mc, Mc) in zip(m, M) ])
-
-effective = [masks[0]] + [ suppressmask(mc, Mc) for (mc, Mc) in zip(masks[1:], masks) ]
-print(effective)
-
-s = 0
-combos = 2**effective[mi].count('X')
-for l in input[:0:-1]:
-	if l.startswith('mask = '):
-		mi += 1
-		combos = 2**effective[mi].count('X')
+addresses = {}
+for l in input:
+	if l.startswith('mask'):
+		mask = l.split()[-1]
 	else:
 		m = re.match('mem\[(.*)\] = (.*)', l)
-		s += combos * int(m[2])
-print(s)
+		at = f'{int(m[1]):036b}'
+		addresses[mergemask(mask, at)] = int(m[2]) # { at: significant-bits, value }
+
+import itertools
+def combos(a):
+	off = [ i for i in range(36) if a[i] == 'X' ]
+	for p in itertools.product(('0','1'), repeat=len(off)):
+		ls = list(a)
+		for i in range(len(off)):
+			ls[off[i]] = p[i]
+		yield ''.join(ls)
+
+mem = {}
+for a in addresses:
+	for c in combos(a):
+		mem[c] = addresses[a]
+
+print(sum(mem.values()))

@@ -50,7 +50,7 @@ print(sum(p*k for p,k in zip(pot, kin)))
 
 # Part Two
 
-pos = [
+initial = [
 	[6, -2, -7],
 	[-6, -7, -4],
 	[-9, 11, 0],
@@ -63,10 +63,8 @@ from math import gcd
 def lcm(a, b):
 	return a*b // gcd(a, b)
 
-initial = deepcopy(pos)
-
 steps = 1
-for dim in range(len(pos[0])):
+for dim in range(len(initial[0])):
 	n=0
 	pos = [ [p[dim]] for p in initial ]
 	vel = [ [ 0 for _ in p ] for p in pos ]

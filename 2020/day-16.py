@@ -2,7 +2,7 @@ with open('input-16.txt') as f:
 	input = f.read().splitlines()
 
 sep = input.index('')
-field_ranges = { d: [ range(*( int(b) + (1 if i==1 else 0) for i,b in enumerate(v.split('-')) )) for v in r.split(' or ') ] for d, r in (l.split(': ') for l in input[:sep]) } # comprehension goes brrrt
+field_ranges = { d: [ range(*( int(b) + i for i, b in enumerate(v.split('-')) )) for v in r.split(' or ') ] for d, r in (l.split(': ') for l in input[:sep]) } # comprehension goes brrrt
 ticket = [ int(v) for v in input[sep+2].split(',') ]
 nearby_tickets = [ [ int(v) for v in l.split(',') ] for l in input[sep+5:] ]
 

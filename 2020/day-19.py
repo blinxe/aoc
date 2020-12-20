@@ -43,14 +43,21 @@ print(sum(1 for m in messages if match(m, '0') == len(m)))
 
 # Part Two
 
-rules['8'] = [['42'], ['42', '8']]
-rules['11'] = [['42', '31'], ['42', '11', '31']]
+# r0 = r8, r11
+# r0 = r42+, (r42, r31)+
 
-rules['8'] = [ ['42']*n for n in range(1, 0, -1) ]
-rules['11'] = [ ['42']*n + ['31']*n for n in range(1, 0, -1) ]
+ok = []
+for msg in messages:
+	r42 = 0
+	off = 0
+	while m := match(msg[off:], '42'):
+		r42 += 1
+		off += m
+	r31 = 0
+	while m := match(msg[off:], '31'):
+		r31 += 1
+		off += m
+	if off == len(msg) and r42>r31>0:
+		ok.append(msg)
 
-# print(sum(1 for m in messages if match(m, '0') == len(m)))
-print(match('babbbbabbbbbbaa', '0'))
-
-rules['lol'] = [ ['42','42'], ['42'] ]
-print(match('babbbbabbb', 'lol'))
+print(len(ok))

@@ -10,7 +10,7 @@ init = set((x,y) for y,row in enumerate(input) for x,c in enumerate(row) if c=='
 def memoize(f):
     memo = {}
     def helper(x):
-        if x not in memo:            
+        if x not in memo:
             memo[x] = f(x)
         return memo[x]
     return helper

@@ -1,5 +1,5 @@
-# input = '952316487'
-input = '389125467'
+input = '952316487'
+# input = '389125467'
 
 cups = [ int(c) for c in input ]
 
@@ -42,17 +42,43 @@ for _ in range(100):
 print(cups)
 one = cups.index(1)
 print(''.join(str(i) for i in cups[one+1:] + cups[:one]))
+print()
 
 
 # Part Two
 
-cups = [ int(c) for c in input ] + list(range(10, 1_000_001))
+input = [ int(c) for c in input ]
+print(input)
 
-index = 0
+cups = [ i+1 for i in range(1_000_001) ]
+cups[0] = -1
+
+for n,nxt in zip(input, input[1:]):
+	cups[n] = nxt
+cups[input[-1]] = 10
+cups[-1] = input[0]
+
+def shuffle_p2(cups):
+	global index
+	pick = [ cups[index], cups[cups[index]], cups[cups[cups[index]]] ]
+	cups[index] = cups[pick[-1]]
+
+	insert = index-1
+	if insert == 0:
+		insert = 1_000_000
+	while insert in pick:
+		insert -= 1
+		if insert == 0:
+			insert = 1_000_000
+
+	cups[pick[-1]] = cups[insert]
+	cups[insert] = pick[0]
+
+	index = cups[index]
+
+
+index = input[0]
 for i in range(10_000_000):
-	if (i % 1_000) == 0: print(i, flush=True)
-	cups = shuffle(cups)
-
-print(cups)
-one = cups.index(1)
-print(cups[one+1], cups[one+2])
+	if (i%100_000) == 0: print(i, flush=True)
+	shuffle_p2(cups)
+print(cups[1], '*', cups[cups[1]], '=', cups[1]*cups[cups[1]])
